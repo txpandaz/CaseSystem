@@ -50,6 +50,8 @@ const modifierData = [
 
 const selectedOfficers = new Set();
 
+const webhookUrl = "https://discord.com/api/webhooks/1513913594700628089/0b4pWUSNFBwnhrez5pMMoKdysCakVthPXEq-wjuTZYwpOoWze-O74_s8GSzvrXNO68JY"; // ใส่ URL ของคุณที่นี่
+
 let itemQtys = {};
 let checkStates = {};
 let globalBail = false;
@@ -597,30 +599,43 @@ async function submitCase() {
     console.log("Login Check:", { myId, myName });
 
     if (!myId || myId === 'null' || !myName || myName === 'null') {
-        Swal.fire({ 
-            icon: 'error', 
-            title: 'ยังไม่ได้ Login!', 
-            text: 'ระบบไม่พบข้อมูลโปรไฟล์ กรุณาตั้งค่าโปรไฟล์ใหม่อีกครั้ง' 
+        iziToast.error({
+            title: 'ยังไม่ได้ Login!',
+            message: 'กรุณาทำการ Login ก่อนใช้งานระบบ',
+            position: 'bottomLeft',
+            timeout: 2000,
         });
         return;
     }
 
     if (!suspectName) {
-        Swal.fire({ icon: 'warning', title: 'ลืมใส่ชื่อผู้ต้องหา!', text: 'กรุณากรอกชื่อผู้ต้องหาก่อนส่งคดี' });
+        iziToast.warning({
+            title: 'ลืมใส่ชื่อผู้ต้องหา!',
+            message: 'กรุณากรอกชื่อผู้ต้องหาก่อนส่งคดี',
+            position: 'bottomLeft',
+            timeout: 2000,
+        });
         return;
     }
     const billRows = document.querySelectorAll('#case-log-list .bill-row');
     if (billRows.length === 0) {
-        Swal.fire({ icon: 'warning', title: 'ยังไม่ได้เลือกข้อหา!', text: 'กรุณาเลือกรายการคดีก่อนส่ง' });
+
+        iziToast.warning({
+            title: 'ยังไม่ได้เลือกข้อหา!',
+            message: 'กรุณาเลือกรายการคดีก่อนส่ง',
+            position: 'bottomLeft',
+            timeout: 2000,
+        });
         return;
     }
 
     const previewImg = document.querySelector('.preview-img');
     if (!previewImg) {
-        Swal.fire({ 
-            icon: 'error', 
-            title: 'ไม่มีรูปภาพหลักฐาน!', 
-            text: 'กรุณาวางรูปภาพ (Ctrl+V) เพื่อเป็นหลักฐานก่อนกดบันทึกคดี' 
+        iziToast.warning({
+            title: 'ไม่มีรูปภาพหลักฐาน!',
+            message: 'กรุณาวางรูปภาพ เพื่อเป็นหลักฐานก่อนกดบันทึกคดี',
+            position: 'bottomLeft',
+            timeout: 2000,
         });
         return;
     }
@@ -657,8 +672,6 @@ async function submitCase() {
         return `• ${c.text} (${fineText} | ${timeText})`;
 
     }).join('\n');
-
-    const webhookUrl = "https://discord.com/api/webhooks/1513913594700628089/0b4pWUSNFBwnhrez5pMMoKdysCakVthPXEq-wjuTZYwpOoWze-O74_s8GSzvrXNO68JY"; // ใส่ URL ของคุณที่นี่
 
     const formData = new FormData();
 
@@ -709,12 +722,15 @@ async function submitCase() {
         formData.append('file', blob, 'evidence.png');
     }
 
+    const scrollY = window.scrollY;
+
     try {
-        Swal.fire({
-            icon:'success',
-            title:'กำลังส่งข้อมูล',
-            timer:1000,
-            showConfirmButton:false
+
+        iziToast.success({
+            title: 'ส่งคดีสำเร็จ!',
+            message: 'ส่งข้อมูลเรียบร้อย',
+            position: 'bottomLeft',
+            timeout: 2000,
         });
 
         fetch(webhookUrl,{
@@ -731,8 +747,15 @@ async function submitCase() {
         
     } catch (e) {
         console.error(e);
-        Swal.fire({ icon: 'error', title: 'ผิดพลาด', text: 'ไม่สามารถส่งข้อมูลไปยัง Discord ได้' });
+        iziToast.error({
+            title: 'กรุณาติดต่อ ผู้พัฒนา!',
+            message: 'ไม่สามารถส่งข้อมูลไปยัง Discord ได้',
+            position: 'bottomLeft',
+            timeout: 2000,
+        });
     }
+
+    window.scrollTo(0, scrollY);
 }
 
 document.body.addEventListener('paste', (event) => {
@@ -825,10 +848,24 @@ function renderOfficerList(officers) {
                 selectedOfficers.add(off.id);
                 row.classList.add('selected');
             }
+
+            updateSelectedOfficerUI();
         };
 
         container.appendChild(row);
     });
+}
+
+function updateSelectedOfficerUI() {
+    const box = document.getElementById('selected-officer-list');
+
+    const names = officersListGlobal
+        .filter(o => selectedOfficers.has(o.id))
+        .map(o => `• ${o.name}`);
+
+    box.innerHTML = names.length
+        ? names.join('<br>')
+        : '- ยังไม่ได้เลือก';
 }
 
 function filterOfficers() {
@@ -866,6 +903,100 @@ function updateHeaderBadge(fullName) {
     const badgeSpan = document.getElementById('header-user-name');
     if (badgeSpan) {
         badgeSpan.innerText = cleanName;
+    }
+}
+
+async function submitTake12() {
+    const nameInput = document.getElementById('header-user-name');
+    const suspectName = nameInput ? nameInput.value.trim() : "";
+
+    const myId = localStorage.getItem('myDiscordId');
+    const myName = localStorage.getItem('myUsername');
+
+    const previewImg = document.querySelector('.preview-img');
+
+    if (!myId || !myName) {
+       iziToast.error({
+            title: 'ยังไม่ได้ Login!',
+            message: 'กรุณาทำการ Login ก่อนใช้งานระบบ',
+            position: 'bottomLeft',
+            timeout: 2000,
+        });
+        return;
+    }
+
+    if (!previewImg) {
+        iziToast.warning({
+            title: 'ไม่มีรูปภาพหลักฐาน!',
+            message: 'กรุณาวางรูปภาพ เพื่อเป็นหลักฐานก่อนกดบันทึกคดี',
+            position: 'bottomLeft',
+            timeout: 2000,
+        });
+        return;
+    }
+
+    const officerIds = [...selectedOfficers];
+
+    if (!officerIds.includes(myId)) {
+        officerIds.unshift(myId);
+    }
+
+    const officerText = officerIds
+        .map(id => `• <@${id}> ${id === myId ? '(ผู้ส่ง)' : ''}`)
+        .join('\n');
+
+    const formData = new FormData();
+
+    const payload = {
+        embeds: [{
+            title: "📸 TAKE 2",
+            color: 0x2f3136,
+
+            fields: [
+                {
+                    name: "👮 เจ้าหน้าที่",
+                    value: officerText || "ไม่มี",
+                    inline: false
+                },
+            ],
+
+            // image: {
+            //     url: "attachment://evidence.png"
+            // },
+
+            footer: {
+                text: `TAKE 2 | ${new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}`
+            }
+        }]
+    };
+
+    formData.append("payload_json", JSON.stringify(payload));
+
+    const response = await fetch(previewImg.src);
+    const blob = await response.blob();
+    formData.append("file", blob, "evidence.png");
+
+    try {
+        iziToast.success({
+            title: 'ส่ง Take 2 สำเร็จ',
+            message: 'ลงบันทึกเรียบร้อย',
+            position: 'bottomLeft',
+            timeout: 2000,
+        });
+
+        await fetch(webhookUrl, {
+            method: "POST",
+            body: formData
+        });
+
+    } catch (err) {
+        console.error(err);
+        iziToast.error({
+            title: 'กรุณาติดต่อ ผู้พัฒนา!',
+            message: 'ไม่สามารถส่งข้อมูลไปยัง Discord ได้',
+            position: 'bottomLeft',
+            timeout: 2000,
+        });
     }
 }
 
