@@ -48,6 +48,8 @@ const modifierData = [
     { id: "m_onFoot", text: "เดินเท้าทำงานผิดกฏหมายทุกชนิด", fineText: "ปรับ X5", timeText: "คุก X5", note: "ทวีคูณ X5 ทั้งใบเสร็จ" }
 ];
 
+const selectedOfficers = new Set();
+
 let itemQtys = {};
 let checkStates = {};
 let globalBail = false;
@@ -486,9 +488,11 @@ async function submitCase() {
         `${currentNormalTime.toLocaleString()} นาที (+${currentBailMoney.toLocaleString()} บ. | -${currentNormalTime.toLocaleString()} น.)`;
     }
 
-    const checkedBoxes = document.querySelectorAll('#officer-list-container input[type="checkbox"]:checked');
-    let officerIds = Array.from(checkedBoxes).map(cb => cb.value);
-    if (!officerIds.includes(myId)) officerIds.unshift(myId);
+    let officerIds = [...selectedOfficers];
+
+    if (!officerIds.includes(myId)) {
+        officerIds.unshift(myId);
+    }
     const officerText = officerIds.map(id => `• <@${id}> ${id === myId ? '(ผู้บันทึก)' : ''}`).join('\n');
     const cases = currentCaseDetails.map(c=>{
         let fineText =
@@ -573,11 +577,9 @@ async function submitCase() {
 
         if (nameInput) nameInput.value = '';
 
-        document.querySelectorAll('#officer-list-container input[type="checkbox"]').forEach(cb => {
-
-            if (cb.value !== myId) cb.checked = false;
-
-        });
+        selectedOfficers.clear();
+        renderOfficerList(officersListGlobal);
+        
     } catch (e) {
         console.error(e);
         Swal.fire({ icon: 'error', title: 'ผิดพลาด', text: 'ไม่สามารถส่งข้อมูลไปยัง Discord ได้' });
@@ -630,8 +632,6 @@ async function loadOfficersFromSheet() {
         console.error("ดึงข้อมูลไม่ได้:", error);
     }
 }
-
-const selectedOfficers = new Set();
 
 function renderOfficerList(officers) {
     const container = document.getElementById('officer-list-container');
