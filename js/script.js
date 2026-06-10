@@ -976,6 +976,8 @@ async function submitTake12() {
     const blob = await response.blob();
     formData.append("file", blob, "evidence.png");
 
+    resetAll();
+
     try {
         iziToast.success({
             title: 'ส่ง Take 2 สำเร็จ',
@@ -988,8 +990,6 @@ async function submitTake12() {
             method: "POST",
             body: formData
         });
-
-        resetAll();
 
     } catch (err) {
         console.error(err);
