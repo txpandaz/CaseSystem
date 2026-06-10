@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
 </head>
 <body>
 
@@ -37,7 +38,9 @@
             <button class="tab-btn" onclick="switchTab('tab-severe')"><i class="fa-solid fa-triangle-exclamation"></i> คดีร้ายแรง (คดีแดง)</button>
             <button class="tab-btn" onclick="switchTab('tab-modifiers')"><i class="fa-solid fa-sliders"></i> เงื่อนไขพิเศษ</button>
             <button class="tab-btn" onclick="switchTab('tab-favorite')"><i class="fa-solid fa-star"></i> รายการโปรด</button>
+        
         </div>
+        
 
         <div class="table-wrapper">
             <div class="grid-header">
@@ -91,6 +94,7 @@
             <div style="color: var(--text-muted); text-align: center; margin-top: auto; margin-bottom: auto;">ไม่มีการเลือกคดีหรือของผิดกฎหมาย</div>
         </div>
         
+        
         <div class="calc-fields">
             <div class="stat-box">
                 <div class="stat-label"><i class="fa-solid fa-wallet"></i> ยอดเงินค่าปรับสุทธิ</div>
@@ -133,21 +137,12 @@
             </div>
         </div>
 
-        <div class="officer-section">
-            <div class="officer-header">
-                <i class="fa-solid fa-user-police"></i> เจ้าหน้าที่ร่วม (ออนไลน์)
-            </div>
-            
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="officer-search" placeholder="ค้นหาชื่อ..." onkeyup="filterOfficers()">
-            </div>
-
-            <div id="officer-list-container" class="officer-list"></div>
-        </div>
-
         <button class="switch-btn" id="global-bail-btn" onclick="toggleGlobalBail()">
             <i class="fa-solid fa-unlock"></i> ขอประกันตัว (ปิดอยู่)
+        </button>
+
+        <button class="btn-bottom btn-submit-tk2" onclick="submitTake12()">
+            <i class="fa-solid fa-camera"></i> Take 2
         </button>
 
        <div class="action-buttons" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
@@ -160,6 +155,27 @@
             </button>
         </div>
         
+    </div>
+
+
+   <div class="officer-section">
+
+        <div id="selected-officer-box" class="selected-officer-box">
+            <div class="title">👮 เจ้าหน้าที่ที่เลือก</div>
+            <div id="selected-officer-list" class="list">- ยังไม่ได้เลือก</div>
+        </div>
+
+        <div class="officer-header">
+            <i class="fa-solid fa-user-police"></i> เจ้าหน้าที่ร่วม (ออนไลน์)
+        </div>
+
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="officer-search" placeholder="ค้นหาชื่อ..." onkeyup="filterOfficers()">
+        </div>
+
+        <div id="officer-list-container" class="officer-list"></div>
+
     </div>
 </div>
 
