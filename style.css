@@ -749,6 +749,7 @@ input[type="number"]:focus {
     
     background: rgba(255, 255, 255, 0.02);
     border-radius: 4px;
+    border: 1px solid #696969;
     
     white-space: nowrap;
     overflow: hidden;
@@ -756,7 +757,13 @@ input[type="number"]:focus {
 }
 
 .officer-row:hover {
-    background: rgba(255, 255, 255, 0.05); /* เพิ่มลูกเล่นเวลาเอาเมาส์ชี้ */
+    background: rgba(80, 200, 120, 0.35);
+    border: 1px solid #50c878;
+}
+
+.officer-row.selected {
+    background: rgba(80, 200, 120, 0.35);
+    border: 1px solid #50c878;
 }
 
 .officer-row input { 
