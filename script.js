@@ -1,7 +1,7 @@
 const itemsData = [
     { id: "i1", text: "ปูนไว้ในการครอบครอง", fine: 3000, time: 5, note: "ต่อ 1 ชิ้น" },
     { id: "i2", text: "สายไฟไว้ในการครอบครอง", fine: 3000, time: 5, note: "ต่อ 1 ชิ้น" },
-    { id: "i3", text: "เงินผิดกฏหมาย (เงินแดง)", fine: 0, time: 10, isRedMoney: true, note: "ค่าปรับ X10 จากยอดเงินแดง / พบเงินแดงจำคุก 10 นาทีเหมา" },
+    { id: "i3", text: "เงินผิดกฏหมาย", fine: 0, time: 10, isRedMoney: true, note: "ค่าปรับ X10 จากยอดเงินแดง / พบเงินแดงจำคุก 10 นาทีเหมา" },
     { id: "i4", text: "ใบกระท่อม", fine: 100, time: 0, note: "ต่อ 1 ใบ / ยึดไม่จำคุก" },
     { id: "i5", text: "แพ็คกระท่อม", fine: 3000, time: 10, note: "ต่อ 1 แพ็ค" }
 ];
@@ -74,8 +74,93 @@ function renderAll() {
     renderCheckboxes('section-normal', normalData);
     renderCheckboxes('section-severe', severeData);
     renderModifiers();
+    renderFavorites();
 }
 
+function renderFavorites() {
+    const container = document.getElementById("section-favorite");
+    container.innerHTML = "";
+
+    const favorites = [
+        ...itemsData,
+        ...normalData,
+        ...severeData,
+        ...modifierData
+    ].filter(x => pinnedStates[x.id]);
+
+    favorites.forEach(law => {
+
+        let chooseHtml = "";
+
+        if (itemsData.find(x => x.id == law.id)) {
+            chooseHtml = `
+                <input type="number"
+                    id="qty-${law.id}"
+                    value="${itemQtys[law.id] || 0}"
+                    min="0"
+                    onchange="updateQty('${law.id}')"
+                    style="width:50px;">
+            `;
+        }
+
+        else if (modifierData.find(x => x.id == law.id)) {
+            chooseHtml = `
+                <button class="btn-choose ${checkStates[law.id] ? 'selected' : ''}"
+                id="btn-check-${law.id}"
+                onclick="toggleRowCheck('${law.id}')">
+                Choose
+                </button>
+            `;
+        }
+
+        else {
+            chooseHtml = `
+                <button class="btn-choose ${checkStates[law.id] ? 'selected' : ''}"
+                id="btn-check-${law.id}"
+                onclick="toggleRowCheck('${law.id}')">
+                Choose
+                </button>
+            `;
+        }
+
+        container.innerHTML += `
+            <div class="row-item">
+
+                <button class="btn-pin active"
+                onclick="togglePin('${law.id}')">
+                <i class="fa-solid fa-star"></i>
+                </button>
+
+                <div class="law-name">
+                    ${law.text}
+                    <span class="law-note">
+                        ${law.note || ""}
+                    </span>
+                </div>
+
+                <div class="text-center">
+                    ${law.fineText || (law.fine ?? "-")}
+                </div>
+
+                <div class="text-center">
+                    ${law.timeText || ((law.time ?? "-") + (law.time != null ? "m" : ""))}
+                </div>
+
+                <div class="text-center">
+                    ${chooseHtml}
+                </div>
+
+            </div>
+        `;
+    });
+
+    if(favorites.length == 0){
+        container.innerHTML = `
+        <div style="padding:20px;text-align:center;color:#999;">
+            ⭐ ยังไม่มีรายการโปรด
+        </div>`;
+    }
+}
 
 function switchTab(tabId) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -211,8 +296,11 @@ function calculate() {
             if(law.isRedMoney) {
                 rawFine += (q * 10); 
                 normalTime += law.time; 
+
+                caseList.push(`${shortText} x${q.toLocaleString()}`);
+
                 currentCaseDetails.push({
-                    text: `${shortText} [${q.toLocaleString()} แดง]`,
+                    text: `${shortText} x${q.toLocaleString()}`,
                     fine: q * 10,
                     time: law.time
                 });
