@@ -989,6 +989,8 @@ async function submitTake12() {
             body: formData
         });
 
+        resetAll();
+
     } catch (err) {
         console.error(err);
         iziToast.error({
