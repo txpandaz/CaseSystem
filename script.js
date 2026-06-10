@@ -631,20 +631,39 @@ async function loadOfficersFromSheet() {
     }
 }
 
+const selectedOfficers = new Set();
+
 function renderOfficerList(officers) {
     const container = document.getElementById('officer-list-container');
     container.innerHTML = '';
+
     const myId = localStorage.getItem('myDiscordId');
 
     officers.forEach(off => {
-        if (off.id === myId) return; 
+        if (off.id === myId) return;
 
-        container.innerHTML += `
-            <div class="officer-row" id="row-${off.id}">
-                <input type="checkbox" value="${off.id}">
-                <span class="officer-name">${off.name}</span>
-            </div>
+        const row = document.createElement('div');
+        row.className = 'officer-row';
+
+        if (selectedOfficers.has(off.id)) {
+            row.classList.add('selected');
+        }
+
+        row.innerHTML = `
+            <span class="officer-name">${off.name}</span>
         `;
+
+        row.onclick = () => {
+            if (selectedOfficers.has(off.id)) {
+                selectedOfficers.delete(off.id);
+                row.classList.remove('selected');
+            } else {
+                selectedOfficers.add(off.id);
+                row.classList.add('selected');
+            }
+        };
+
+        container.appendChild(row);
     });
 }
 
