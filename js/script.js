@@ -428,27 +428,65 @@ function calculate() {
     if (checkStates['m_escape_water']) { 
         addedMultiplier += 2;   
         additionalTime += 30; 
+
         caseList.push("หลบหนีลงน้ำ");
+
+        currentCaseDetails.push({
+            text: "หลบหนีลงน้ำ",
+            fine: "X2",
+            time: 30
+        });
     }
+
     if (checkStates['m_escape_mountain']) { 
         addedMultiplier += 2;   
         additionalTime += 30; 
+
         caseList.push("หลบหนีขึ้นเขา");
+
+        currentCaseDetails.push({
+            text: "หลบหนีขึ้นเขา",
+            fine: "X2",
+            time: 30
+        });
     }
+
     if (checkStates['m_escape_city']) { 
         addedMultiplier += 2;   
         additionalTime += 30; 
+
         caseList.push("หลบหนีออกนอกเมือง");
+
+        currentCaseDetails.push({
+            text: "หลบหนีออกนอกเมือง",
+            fine: "X2",
+            time: 30
+        });
     }
-    
+
     if (checkStates['m_preRe']) { 
         addedMultiplier += 10;  
+
         caseList.push("ทำงานดำก่อนประกาศรีประเทศ");
+
+        currentCaseDetails.push({
+            text: "ทำงานดำก่อนประกาศรีประเทศ",
+            fine: "X10",
+            time: "ไม่มี"
+        });
     }
+
     if (checkStates['m_onFoot']) { 
         addedMultiplier += 5;   
         timeMultiplier = Math.max(timeMultiplier, 5); 
+
         caseList.push("เดินเท้าทำงานผิดกฏหมาย");
+
+        currentCaseDetails.push({
+            text: "เดินเท้าทำงานผิดกฏหมาย",
+            fine: "X5",
+            time: "X5"
+        });
     }
 
     let fineMultiplier = (addedMultiplier > 0) ? addedMultiplier : 1;
@@ -460,6 +498,12 @@ function calculate() {
         severeTime *= 0.5;
         additionalTime *= 0.5;
         caseList.push("สมรู้ร่วมคิด");
+
+        currentCaseDetails.push({
+            text: "สมรู้ร่วมคิด",
+            fine: "ครึ่งนึงของต้นคดี",
+            time: "ครึ่งนึงของต้นคดี"
+        });
     }
 
     normalTime = (normalTime * timeMultiplier) + additionalTime;
