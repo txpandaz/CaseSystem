@@ -51,8 +51,6 @@ body::before {
     transform: scale(0.9);
 }
 
-
-
 #bill-items-list {
     flex: 2;
     overflow-y: auto;
@@ -63,7 +61,6 @@ body::before {
 }
 
 
-/* ปรับแต่งปุ่มให้เต็มความกว้างและอยู่ในตำแหน่งที่สมมาตร */
 .switch-btn, .btn-bottom {
     width: 100%;
     padding: 15px;
@@ -72,21 +69,6 @@ body::before {
     cursor: pointer;
     text-align: center;
 }
-
-/* .left-panel {
-    display: flex;
-    flex: 2.5;
-    background: var(--panel-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    padding: 20px;
-    border-radius: 6px;
-    border: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    box-sizing: border-box;
-} */
 
 .left-panel {
     display: flex;
